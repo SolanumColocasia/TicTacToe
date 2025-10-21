@@ -1,0 +1,146 @@
+//A game of tic tac toe that allows: Users to enter X/O and play tic tac toe.
+
+#include "TicTacToe.h"
+
+#include<iostream>
+#include<string>
+#include<ctype.h>
+
+/// using namespace std;
+Board::Board(){ 
+    //constructor to clear the board
+    for(int i = 0; i<3;i++){
+        for(int j = 0; j<3;j++){
+            B[i][j] = ' ';
+        }
+    }
+    turn = 'X';
+}
+        
+/// displaying the board
+void Board::displayBoard() const {
+    std::cout<<"\n"<<"  A   B   C \n";
+    for(int i=0;i<3;i++){
+        std::cout<<i+1<<" "<<B[i][0]<<" | "<<B[i][1]<<" | "<<B[i][2];
+        if(i<2){std::cout<<"\n"<<" ---+---+---"<<"\n";}
+    }
+}
+
+    
+/// returns the character the user plays.
+void Board::nextTurn() const{
+    this->turn = this->turn == 'X' ? 'O' : 'X';
+}
+      
+    
+//getting user choice on board
+void Board::putXO() {
+    int i=0,j=0;
+    char a;
+    while (true) {
+        std::cout<<"\n"<<turn<<" plays now.\n";
+        std::cout<<"Please enter horizontal and vertical coordinate for your piece to go to (eg: 1 A): ";
+        std::cin>>i>>a;
+        if(std::cin.fail()){
+            std::cin.clear();
+            std::cin.ignore(1000, '\n');
+            std::cout<<"Invalid input, please enter the horizontal coordinate first(a number).\n";
+            continue;
+        }
+        a = toupper(a);
+        j=a-'A';
+        if(i !=1 && i!=2 && i!=3){                           //checks for row values
+            std::cout<<"\nInvalid input, horizontal coordinate is wrong. Please try again.\n";
+        }
+        else if(a != 'A' && a != 'B' && a!= 'C'){           //checks for coloumn values
+            std::cout<<"\nInvalid input, vertical coordinate is wrong. Please try again.\n";
+        }
+        else if(B[i-1][j] != ' '){                          //checks for filled spaces
+            std::cout<<"\nInvalid input, the space is alrady filled! Please try again.\n";
+        }
+        else {
+            B[i-1][j] = turn;
+            break;
+        }
+    }
+    nextTurn();
+}
+
+    
+bool Board::checkWin() const { //checks for wins
+        
+    //horizontal check
+    for(int i = 0; i<3;i++){
+        
+        if(B[i][0] != ' '){
+            if(B[i][0]==B[i][1] && B[i][0]==B[i][2]){
+                winner = B[i][1];
+                return true;
+            }
+        }
+    }
+        
+
+    //vertical check
+    for(int j = 0; j < 3; j++){
+        if(B[0][j] != ' '){
+            if(B[0][j]==B[1][j] && B[0][j]==B[2][j]){
+                winner = B[0][j]; // std::cout<<"\n"<<B[0][j]<<" has won!\n";
+                return true;
+            }
+        }
+    }
+
+    //diagonal check
+    if(B[1][1] != ' '){
+        if(B[0][0] == B[1][1] && B[0][0] == B[2][2]){
+            winner = B[1][1]; //std::cout<<"\n"<<B[1][1]<<" has won!";
+            return true;
+        }
+        else if (B[0][2] == B[1][1] && B[0][2] == B[2][0]){
+            winner = B[1][1]; //std::cout<<"\n"<<B[1][1]<<" has won!";
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Board::checkDraw() const{ 
+    int count = 0;  
+    for(int i = 0; i<3;i++){
+        for(int j = 0; j<3; j++){
+            if(B[i][j] == ' ')
+                break;            
+            else 
+                count ++;
+        }
+    }
+        
+    if(count == 9){
+        return true;
+    }
+
+    return false;
+}
+
+void Board::doEverything(){
+    displayBoard();
+    putXO();
+    if(checkWin()){
+        std::cout<<"\n"<<winner<<" has won!\n";
+    }
+    else {
+        if(checkDraw()){
+        std::cout<<"\nThe game is a draw.\n";
+        }
+    }        
+}
+
+int main(){
+    Board b;
+    std::cout<<"\nThis is a tictactoe game.";
+    do{
+        b.doEverything();
+    }while(!b.checkWin());
+    return 0;
+}

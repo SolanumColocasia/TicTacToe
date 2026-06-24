@@ -1,8 +1,8 @@
 //A game of tic tac toe that allows: Users to enter X/O and play tic tac toe.
 
 #include "TicTacToe.h"
-
 #include<iostream>
+#include<iomanip>
 #include<string>
 #include<ctype.h>
 
@@ -138,7 +138,17 @@ void Board::doEverything(){
 
 int main(){
     Board b;
-    std::cout<<"\nThis is a tictactoe game.";
+    int choice;
+    std::cout<<std::setw(30)<<std::setfill('-');
+    std::cout<<"\n\t\tTic Tac Toe"<<std::endl;
+    std::cout<<std::setw(30)<<std::setfill('-');
+
+    std::cout<<"\nRules: \nThis is a classic 2 player Tic tac toe game, where the first player to align their respectice piece(X or O) wins.";
+    std::cout<<"\nThis can take place either across rows, columns or along the 2 main diagonals.";
+
+    std::cout<<"For solo play with AI enter [1], for pass and play enter [2]";
+    std::cin>>choice;
+    
     do{
         b.doEverything();
     }while(!b.checkWin());

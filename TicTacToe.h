@@ -1,11 +1,12 @@
 //A game of tic tac toe that allows: Users to enter X/O and play tic tac toe.
+#include<array>
 
 class Board {
 
 private:
     mutable char turn;
     mutable char winner;
-    char B[3][3];
+    std::array<std::array<char, 3>, 3> B;
 
     void displayBoard() const;
 

@@ -11,11 +11,11 @@ The game ends when a player gets three in a row (horizontally, vertically, or di
 ## Files
 
 | File | Description |
-|------|-------------|
-| `TicTacToe.h`  | Board class declaration |
+| ------ | ------------- |
+| `TicTacToe.h` | Board class declaration |
 | `TicTacToe.cpp` | Implementation and `main()` |
 | `TicTacToe.hpp` | Single-header implementation (alternative) |
-| `minimax.cpp`   | Placeholder for AI logic |
+| `minimax.cpp` | Placeholder for AI logic |
 | `TicTacToe.exe` | Pre-built executable |
 
 ## Build

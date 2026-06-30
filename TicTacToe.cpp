@@ -4,7 +4,7 @@
 #include<iostream>
 #include<iomanip>
 #include<string>
-#include<ctype.h>
+#include<cctype>
 
 /// using namespace std;
 Board::Board(){ 
@@ -63,15 +63,12 @@ void Board::putXO() {
             break;
         }
     }
-    nextTurn();
 }
 
     
-bool Board::checkWin() const { //checks for wins
-        
+bool Board::checkWin() const { //checks for wins   
     //horizontal check
-    for(int i = 0; i<3;i++){
-        
+    for(int i = 0; i<3;i++){        
         if(B[i][0] != ' '){
             if(B[i][0]==B[i][1] && B[i][0]==B[i][2]){
                 winner = B[i][1];
@@ -105,27 +102,21 @@ bool Board::checkWin() const { //checks for wins
     return false;
 }
 
-bool Board::checkDraw() const{ 
-    int count = 0;  
+bool Board::checkDraw() const{  
     for(int i = 0; i<3;i++){
         for(int j = 0; j<3; j++){
-            if(B[i][j] == ' ')
-                break;            
-            else 
-                count ++;
+            if(B[i][j] == ' '){
+                return false;
+            }
         }
     }
-        
-    if(count == 9){
-        return true;
-    }
-
-    return false;
+    return true;
 }
 
-void Board::doEverything(){
+void Board::doEverythingDuo(){
     displayBoard();
     putXO();
+    nextTurn();
     if(checkWin()){
         std::cout<<"\n"<<winner<<" has won!\n";
     }
@@ -136,21 +127,153 @@ void Board::doEverything(){
     }        
 }
 
+void Board::minimax_wrapper(){
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            score[i][j] = 0;
+        }
+    }
+
+    minimax(true);
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(B[i][j] == ' '){
+                if(score[i][j] == 1){
+                    B[i][j] = turn;
+                    return;
+                }
+            }
+        }
+    }
+
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(B[i][j] == ' '){
+                if(score[i][j] == 0){
+                    B[i][j] = turn;
+                    return;
+                }
+            }
+        }
+    }
+
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(B[i][j] == ' '){
+                if(score[i][j] == -1){
+                    B[i][j] = turn;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+int Board::minimax(bool maximise, int depth){    
+    int best;
+    if(maximise) {
+        best = -10;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(B[i][j] == ' '){
+                    int current_score;
+                    B[i][j] = turn; // temporarily add to board
+                    if(checkWin()){
+                        current_score = 1;
+                    }
+                    else if (checkDraw()){
+                        current_score = 0;
+                    }
+                    else{                        
+                        nextTurn(); // temporarily switch turn
+                        current_score = minimax(false, depth + 1);
+                        nextTurn(); // reset turn
+                    }
+                    B[i][j] = ' '; // reset board                    
+                    best = (current_score>best) ? current_score:best;
+                    if(depth == 0) score[i][j] = current_score;
+                }
+            }
+        }
+        return best;
+    }
+
+    else {
+        best = 10;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(B[i][j] == ' '){
+                    int current_score;
+                    B[i][j] = turn; // temporarily add to board
+                    if(checkWin()){
+                        current_score = -1;
+                    }
+                    else if (checkDraw()){
+                        current_score = 0;
+                    }
+                    else{                        
+                        nextTurn(); // temporarily switch turn
+                        current_score = minimax(true, depth + 1);
+                        nextTurn(); // reset turn
+                    }
+                    B[i][j] = ' '; // reset board
+                    best = (current_score<best) ? current_score:best;
+                }
+            }
+        }
+        return best;
+    }
+}
+
+void Board::doEverythingSolo(){
+    displayBoard();
+    putXO();
+    nextTurn();    
+    if(checkWin()){
+        displayBoard();
+        std::cout<<"\n"<<winner<<" has won!\n";
+    }
+    else if(checkDraw()){
+        displayBoard();
+        std::cout<<"\nThe game is a draw.\n";
+    }
+    else{ 
+        minimax_wrapper();    
+        nextTurn();
+        if(checkWin()){
+            displayBoard();
+            std::cout<<"\n"<<winner<<" has won!\n";
+        }
+        else if(checkDraw()){
+            displayBoard();
+            std::cout<<"\nThe game is a draw.\n";
+        }
+    }
+}
+
 int main(){
     Board b;
     int choice;
-    std::cout<<std::setw(30)<<std::setfill('-');
-    std::cout<<"\n\t\tTic Tac Toe"<<std::endl;
-    std::cout<<std::setw(30)<<std::setfill('-');
+    std::cout<<std::setfill('-')<<std::setw(30)<<""<<std::endl;
+    std::cout<<"\tTic Tac Toe"<<std::endl;
+    std::cout<<std::setfill('-')<<std::setw(30)<<""<<std::endl;
 
-    std::cout<<"\nRules: \nThis is a classic 2 player Tic tac toe game, where the first player to align their respectice piece(X or O) wins.";
-    std::cout<<"\nThis can take place either across rows, columns or along the 2 main diagonals.";
+    std::cout<<"Rules: \nThis is a classic 2 player Tic tac toe game, where the first player to align their respectice piece (X or O) wins.\n";
+    std::cout<<"This can take place either across rows, columns or along the 2 main diagonals.\n";
 
-    std::cout<<"For solo play with AI enter [1], for pass and play enter [2]";
-    std::cin>>choice;
     
-    do{
-        b.doEverything();
-    }while(!b.checkWin());
+    std::cout<<"\nFor solo play with AI enter [1], for pass and play enter [2]. To quit enter [CTRL + C].\n";
+    std::cin>>choice;
+       
+    if(choice == 1) {
+        do{
+            b.doEverythingSolo();
+        }while(!b.checkWin() && !b.checkDraw());
+    }
+    else if(choice == 2) {
+        do{
+            b.doEverythingDuo();
+        }while(!b.checkWin() && !b.checkDraw());
+    }
     return 0;
 }

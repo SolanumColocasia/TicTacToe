@@ -127,6 +127,22 @@ void Board::doEverythingDuo(){
     }        
 }
 
+int Board::evaluate_game(){
+    int self_count = 0, opponent = 0;
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(B[i][j] == turn) self_count++;
+            else if (B[i][j] != ' ') opponent++;
+        }
+    }
+    if(B[1][1] != ' '){
+        if(B[1][1] == turn) self_count++;
+        else opponent++;
+    }
+
+    return self_count - opponent;
+}
+
 void Board::minimax_wrapper(){
     for(int i=0;i<3;i++){
         for(int j=0;j<3;j++){
@@ -169,8 +185,14 @@ void Board::minimax_wrapper(){
     }
 }
 
+void Board::setLevel(LEVEL lvl){
+    level = lvl;
+}
+
 int Board::minimax(bool maximise, int depth){    
     int best;
+    if(level == EASY && depth >=2){return 0;}
+    if(level == MEDIUM && depth >=4){return evaluate_game();}
     if(maximise) {
         best = -10;
         for(int i=0;i<3;i++){
@@ -266,6 +288,14 @@ int main(){
     std::cin>>choice;
        
     if(choice == 1) {
+        std::cout<<"\nPlease select levels: Easy[1], Medium [2], Hard [3]: ";
+        std::cin>>choice;
+        switch (choice){
+            case 1: b.setLevel(EASY); break;
+            case 2: b.setLevel(MEDIUM); break;
+            case 3: b.setLevel(HARD); break;
+            default: std::cerr<<"Invalid selection"; return 0;
+        }
         do{
             b.doEverythingSolo();
         }while(!b.checkWin() && !b.checkDraw());

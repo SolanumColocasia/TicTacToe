@@ -7,7 +7,8 @@ class Board {
 
 private:
     mutable char turn;
-    mutable char winner;
+    mutable char winner;    
+    LEVEL level;
     std::array<std::array<char, 3>, 3> B;    
     std::array<std::array<int, 3>, 3> score;
 
@@ -15,11 +16,15 @@ private:
 
     void nextTurn() const;
 
-    void putXO();    
+    void putXO();
+    
+    void greedy();
     
     int minimax(bool, int=0);
 
     void minimax_wrapper();
+
+    int evaluate_game();
 
 public:
     Board();
@@ -27,6 +32,7 @@ public:
     bool checkWin() const;
     void doEverythingSolo();
     void doEverythingDuo();
+    void setLevel(LEVEL);
 };
 
 
